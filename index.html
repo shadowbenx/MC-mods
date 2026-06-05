@@ -1,0 +1,1258 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>MC Mods - Minecraft Bedrock Mods</title>  
+    <link href="https://fonts.googleapis.com/css2?family=Electrolize&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">  
+    <style>  
+        * {  
+            margin: 0;  
+            padding: 0;  
+            box-sizing: border-box;  
+        }  
+        
+        :root {  
+            --primary: #00d84d;  
+            --primary-dark: #00a839;  
+            --bg-dark: #0a0a0a;  
+            --bg-darker: #050808;  
+            --bg-card: #111111;  
+            --text-light: #e0e0e0;  
+            --text-muted: #8b8b8b;  
+            --border: #1a1a1a;  
+            --accent: #00ff88;  
+            --glow-primary: rgba(0, 255, 136, 0.3);  
+        }  
+
+        body {  
+            font-family: 'Inter', sans-serif;  
+            background: linear-gradient(135deg, var(--bg-darker) 0%, #0d0f14 50%, var(--bg-dark) 100%);  
+            color: var(--text-light);  
+            overflow-x: hidden;  
+            position: relative;  
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 255, 136, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 255, 136, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 1;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        /* Navigation */  
+        nav {  
+            background: rgba(10, 10, 10, 0.92);  
+            backdrop-filter: blur(15px);  
+            border-bottom: 2px solid var(--primary);  
+            padding: 1rem 2rem;  
+            display: flex;  
+            justify-content: space-between;  
+            align-items: center;  
+            position: sticky;  
+            top: 0;  
+            z-index: 1010;  
+            box-shadow: 0 8px 32px rgba(0, 255, 136, 0.12);
+        }  
+
+        .logo {  
+            font-family: 'Electrolize', monospace;  
+            font-size: 1.4rem;  
+            font-weight: 700;  
+            color: var(--primary);  
+            letter-spacing: 1.5px;  
+            cursor: pointer;  
+            transition: all 0.3s ease;  
+            text-transform: uppercase;  
+            height: 60px;  
+            display: flex;  
+            align-items: center;  
+            justify-content: center;  
+            position: relative;  
+        }
+
+        .logo img {  
+            max-height: 60px;  
+            max-width: 200px;  
+            object-fit: contain;  
+            cursor: pointer;  
+            transition: all 0.3s ease;  
+            filter: drop-shadow(0 0 8px var(--glow-primary));
+        }
+
+        .logo img:hover {  
+            filter: drop-shadow(0 0 15px var(--glow-primary)) brightness(1.1);  
+            transform: scale(1.03);
+        }  
+
+        .hamburger {  
+            display: none;  
+            flex-direction: column;  
+            cursor: pointer;  
+            gap: 6px;  
+            background: none;  
+            border: none;  
+        }  
+
+        .hamburger span {  
+            width: 28px;  
+            height: 3px;  
+            background: var(--primary);  
+            border-radius: 2px;  
+            transition: all 0.3s ease;  
+            box-shadow: 0 0 8px var(--glow-primary);
+        }  
+
+        .hamburger.active span:nth-child(1) {  
+            transform: rotate(45deg) translate(10px, 10px);  
+        }  
+
+        .hamburger.active span:nth-child(2) {  
+            opacity: 0;  
+        }  
+
+        .hamburger.active span:nth-child(3) {  
+            transform: rotate(-45deg) translate(7px, -7px);  
+        }  
+
+        .nav-menu {  
+            display: flex;  
+            gap: 2.5rem;  
+            align-items: center;  
+            list-style: none;  
+        }  
+
+        .nav-menu a {  
+            color: var(--text-light);  
+            text-decoration: none;  
+            font-weight: 600;  
+            font-size: 0.9rem;  
+            transition: all 0.3s ease;  
+            position: relative;  
+            cursor: pointer;  
+            text-transform: uppercase;  
+            letter-spacing: 0.5px;
+        }  
+
+        .nav-menu a::after {  
+            content: '';  
+            position: absolute;  
+            bottom: -6px;  
+            left: 0;  
+            width: 0;  
+            height: 2px;  
+            background: var(--primary);  
+            transition: width 0.3s ease;  
+            box-shadow: 0 0 8px var(--glow-primary);
+        }  
+
+        .nav-menu a:hover::after {  
+            width: 100%;  
+        }  
+
+        .nav-menu a:hover {  
+            color: var(--primary);  
+            text-shadow: 0 0 8px var(--glow-primary);
+        }  
+
+        /* Sidebar */  
+        .sidebar {  
+            position: fixed;  
+            left: -300px;  
+            top: 0;  
+            width: 300px;  
+            height: 100vh;  
+            background: linear-gradient(180deg, rgba(10, 10, 10, 0.95) 0%, rgba(15, 15, 20, 0.95) 100%);  
+            backdrop-filter: blur(15px);  
+            border-right: 2px solid var(--primary);  
+            padding: 3rem 1.5rem;  
+            transition: left 0.3s ease;  
+            z-index: 999;  
+            overflow-y: auto;  
+            display: flex;  
+            flex-direction: column;  
+            box-shadow: -8px 0 32px rgba(0, 255, 136, 0.15);
+        }  
+
+        .sidebar.active {  
+            left: 0;  
+        }  
+
+        .sidebar-top {  
+            flex: 1;  
+        }
+
+        .sidebar-bottom {  
+            margin-top: auto;  
+            padding-top: 2rem;  
+            border-top: 2px solid var(--border);  
+        }
+
+        .sidebar a {  
+            display: block;  
+            padding: 1rem 1.5rem;  
+            color: var(--text-light);  
+            text-decoration: none;  
+            margin-bottom: 0.5rem;  
+            border-radius: 8px;  
+            transition: all 0.3s ease;  
+            font-weight: 500;  
+            border-left: 3px solid transparent;  
+            cursor: pointer;  
+            text-transform: uppercase;  
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+            overflow: hidden;
+        }
+
+        .sidebar a::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--primary);
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar a:hover {  
+            background: rgba(0, 255, 136, 0.12);  
+            color: var(--primary);  
+            border-left-color: var(--primary);  
+            padding-left: 2rem;  
+            box-shadow: inset 0 0 15px rgba(0, 255, 136, 0.1);
+            text-shadow: 0 0 8px var(--glow-primary);
+        }  
+
+        /* Main Content */  
+        .main {  
+            padding: 3rem 2rem;  
+            max-width: 1400px;  
+            margin: 0 auto;  
+            position: relative;  
+            z-index: 2;
+        }  
+
+        .page-section {  
+            display: none;  
+        }
+
+        .page-section.active {  
+            display: block;  
+            animation: pageEnter 0.5s ease;  
+        }
+
+        @keyframes pageEnter {  
+            from {  
+                opacity: 0;  
+                transform: translateY(15px);  
+            }  
+            to {  
+                opacity: 1;  
+                transform: translateY(0);  
+            }  
+        }  
+
+        .hero {  
+            text-align: center;  
+            margin-bottom: 4rem;  
+            position: relative;  
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: -100px;
+            background: 
+                radial-gradient(ellipse 800px 300px at 50% -30%, rgba(0, 255, 136, 0.1), transparent),
+                radial-gradient(ellipse 800px 300px at 50% 50%, rgba(0, 255, 136, 0.05), transparent);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .hero h1 {  
+            font-family: 'Electrolize', monospace;  
+            font-size: 3rem;  
+            font-weight: 700;  
+            margin-bottom: 1rem;  
+            color: var(--primary);  
+            text-transform: uppercase;  
+            letter-spacing: 2px;  
+            text-shadow: 0 0 30px var(--glow-primary);  
+            animation: titlePulse 3s ease-in-out infinite;
+            position: relative;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% {
+                filter: drop-shadow(0 0 15px var(--glow-primary));
+            }
+            50% {
+                filter: drop-shadow(0 0 25px var(--glow-primary));
+            }
+        }
+
+        .hero h1::after {
+            content: '';
+            display: block;
+            width: 120px;
+            height: 2px;
+            background: var(--primary);
+            margin: 1rem auto 0;
+            box-shadow: 0 0 15px var(--glow-primary);
+        }
+
+        .hero p {  
+            font-size: 1rem;  
+            color: var(--text-muted);  
+            margin-bottom: 2rem;  
+            font-weight: 400;  
+            letter-spacing: 0.5px;
+            line-height: 1.6;
+        }  
+
+        /* Mod Grid */  
+        .mod-grid {  
+            display: grid;  
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));  
+            gap: 2rem;  
+            margin-bottom: 4rem;  
+            animation: gridEnter 0.6s ease;  
+        }  
+
+        @keyframes gridEnter {  
+            from {  
+                opacity: 0;  
+            }  
+            to {  
+                opacity: 1;  
+            }  
+        }  
+
+        .mod-card {  
+            background: linear-gradient(135deg, rgba(17, 17, 17, 0.8) 0%, rgba(20, 25, 35, 0.6) 100%);  
+            border: 1.5px solid var(--border);  
+            border-radius: 12px;  
+            overflow: hidden;  
+            cursor: pointer;  
+            transition: all 0.3s ease;  
+            position: relative;  
+            backdrop-filter: blur(8px);
+            box-shadow: 0 6px 24px rgba(0, 255, 136, 0.06);
+        }
+
+        .mod-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.15) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .mod-card:hover::before {  
+            opacity: 1;  
+        }
+
+        .mod-card:hover {  
+            transform: translateY(-8px);  
+            border-color: var(--primary);  
+            box-shadow: 0 12px 40px rgba(0, 255, 136, 0.2);
+        }  
+
+        .mod-header {  
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);  
+            padding: 1.5rem;  
+            position: relative;  
+            z-index: 2;  
+        }  
+
+        .mod-header h3 {  
+            font-family: 'Electrolize', monospace;  
+            font-size: 1.1rem;  
+            color: #0a0a0a;  
+            text-transform: uppercase;  
+            font-weight: 700;  
+            letter-spacing: 0.5px;
+        }  
+
+        .mod-header p {  
+            font-size: 0.75rem;  
+            color: rgba(10, 10, 10, 0.7);  
+            margin-top: 0.3rem;  
+        }  
+
+        .mod-info {  
+            padding: 1.5rem;  
+            position: relative;  
+            z-index: 2;  
+        }  
+
+        .mod-meta {  
+            display: flex;  
+            justify-content: space-between;  
+            font-size: 0.8rem;  
+            color: var(--text-muted);  
+            margin-bottom: 1rem;  
+            font-weight: 600;
+        }  
+
+        .mod-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .mod-description {  
+            font-size: 0.85rem;  
+            color: var(--text-light);  
+            margin-bottom: 1.2rem;  
+            line-height: 1.5;  
+            height: 50px;  
+            overflow: hidden;  
+            text-overflow: ellipsis;  
+            font-weight: 400;
+        }  
+
+        .mod-download {  
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);  
+            color: #0a0a0a;  
+            border: none;  
+            padding: 0.8rem 1.5rem;  
+            border-radius: 8px;  
+            cursor: pointer;  
+            font-weight: 700;  
+            font-size: 0.85rem;  
+            transition: all 0.3s ease;  
+            width: 100%;  
+            text-transform: uppercase;  
+            letter-spacing: 1px;  
+            text-decoration: none;  
+            display: block;  
+            text-align: center;  
+            box-shadow: 0 6px 18px rgba(0, 255, 136, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mod-download::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+        }
+
+        .mod-download:hover::before {
+            transform: translateX(100%);
+        }
+
+        .mod-download:hover {  
+            transform: scale(1.04);  
+            box-shadow: 0 10px 28px rgba(0, 255, 136, 0.4);
+        }  
+
+        /* About Section */
+        .about-container {  
+            background: linear-gradient(135deg, rgba(17, 17, 17, 0.8) 0%, rgba(20, 25, 35, 0.6) 100%);  
+            border: 1.5px solid var(--border);  
+            border-radius: 12px;  
+            padding: 2.5rem;  
+            margin-bottom: 2rem;  
+            backdrop-filter: blur(8px);
+            box-shadow: 0 6px 24px rgba(0, 255, 136, 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-container::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(0, 255, 136, 0.08), transparent);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .about-container h2 {  
+            color: var(--primary);  
+            font-family: 'Electrolize', monospace;  
+            margin-bottom: 1.2rem;  
+            text-transform: uppercase;  
+            font-size: 1.6rem;
+            letter-spacing: 1px;
+            text-shadow: 0 0 15px var(--glow-primary);
+        }
+
+        .about-container p {  
+            color: var(--text-light);  
+            line-height: 1.8;  
+            margin-bottom: 1.2rem;  
+            font-weight: 400;
+            position: relative;
+            z-index: 2;
+            font-size: 0.95rem;
+        }
+
+        .donate-button {  
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);  
+            color: #0a0a0a;  
+            border: none;  
+            padding: 1rem 2rem;  
+            border-radius: 8px;  
+            cursor: pointer;  
+            font-weight: 700;  
+            font-size: 0.9rem;  
+            transition: all 0.3s ease;  
+            text-transform: uppercase;  
+            letter-spacing: 1px;  
+            text-decoration: none;  
+            display: inline-block;  
+            margin-top: 1.2rem;  
+            box-shadow: 0 6px 20px rgba(0, 255, 136, 0.3);
+            position: relative;
+            z-index: 2;
+            overflow: hidden;
+        }
+
+        .donate-button::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+        }
+
+        .donate-button:hover::before {
+            transform: translateX(100%);
+        }
+
+        .donate-button:hover {  
+            transform: scale(1.06);  
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.5);
+        }
+
+        /* Contact Section */
+        .contact-container {  
+            background: linear-gradient(135deg, rgba(17, 17, 17, 0.8) 0%, rgba(20, 25, 35, 0.6) 100%);  
+            border: 1.5px solid var(--border);  
+            border-radius: 12px;  
+            padding: 2.5rem;  
+            margin-bottom: 4rem;  
+            backdrop-filter: blur(8px);
+            box-shadow: 0 6px 24px rgba(0, 255, 136, 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-container::before {
+            content: '';
+            position: absolute;
+            bottom: -100px;
+            left: -100px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(0, 255, 136, 0.08), transparent);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .contact-container h2 {  
+            color: var(--primary);  
+            font-family: 'Electrolize', monospace;  
+            margin-bottom: 1.2rem;  
+            text-transform: uppercase;  
+            font-size: 1.6rem;
+            letter-spacing: 1px;
+            text-shadow: 0 0 15px var(--glow-primary);
+        }
+
+        .contact-container p {  
+            color: var(--text-light);  
+            margin-bottom: 1.2rem;  
+            font-weight: 400;
+            position: relative;
+            z-index: 2;
+            font-size: 0.95rem;
+        }
+
+        .contact-info {  
+            display: grid;  
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));  
+            gap: 1.5rem;  
+            margin-top: 1.5rem;  
+            position: relative;
+            z-index: 2;
+        }
+
+        .contact-item {  
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.08) 0%, rgba(0, 255, 136, 0.03) 100%);  
+            padding: 1.5rem;  
+            border-radius: 10px;  
+            border-left: 3px solid var(--primary);  
+            transition: all 0.3s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .contact-item:hover {
+            transform: translateY(-4px);
+            border-left-color: var(--accent);
+            box-shadow: 0 6px 18px rgba(0, 255, 136, 0.15);
+        }
+
+        .contact-item label {  
+            font-size: 0.8rem;  
+            color: var(--text-muted);  
+            text-transform: uppercase;  
+            display: block;  
+            margin-bottom: 0.6rem;  
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+
+        .contact-item a, .contact-item span {  
+            font-size: 1rem;  
+            color: var(--primary);  
+            font-weight: 700;  
+            text-decoration: none;  
+            font-family: 'Inter', sans-serif;
+        }
+
+        .contact-item a:hover {  
+            color: var(--accent);  
+            text-shadow: 0 0 8px var(--glow-primary);
+        }
+
+        .mod-detail-page {
+            display: none;
+            animation: pageEnter 0.5s ease;
+        }
+
+        .mod-detail-page.active {
+            display: block;
+        }
+
+        .mod-detail-wrapper {
+            background: linear-gradient(135deg, rgba(17, 17, 17, 0.8) 0%, rgba(20, 25, 35, 0.6) 100%);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            padding: 2.5rem;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 6px 24px rgba(0, 255, 136, 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mod-detail-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(0, 255, 136, 0.08), transparent);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .back-to-mods {
+            background: none;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .back-to-mods:hover {
+            background: var(--primary);
+            color: #0a0a0a;
+        }
+
+        .mod-detail-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: start;
+            position: relative;
+            z-index: 2;
+        }
+
+        .mod-thumb {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .mod-thumb-placeholder {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0a0a0a;
+            font-family: 'Electrolize', monospace;
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .mod-detail-image {
+            border-radius: 12px;
+            overflow: hidden;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(0, 255, 136, 0.2);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        }
+
+        .mod-detail-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+            display: block;
+        }
+
+        .mod-detail-image-placeholder {
+            color: #0a0a0a;
+            font-family: 'Electrolize', monospace;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .mod-detail-info h1 {
+            font-family: 'Electrolize', monospace;
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-shadow: 0 0 15px var(--glow-primary);
+            position: relative;
+            z-index: 2;
+        }
+
+        .mod-detail-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .stat-box {
+            background: rgba(0, 255, 136, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .mod-detail-description {
+            background: rgba(0, 255, 136, 0.05);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+            margin-bottom: 2rem;
+            color: var(--text-light);
+            line-height: 1.8;
+            font-size: 0.95rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .mod-detail-download {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #0a0a0a;
+            border: none;
+            padding: 1.2rem 2.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 8px 25px rgba(0, 255, 136, 0.3);
+            position: relative;
+            z-index: 2;
+            overflow: hidden;
+        }
+
+        .mod-detail-download::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+        }
+
+        .mod-detail-download:hover::before {
+            transform: translateX(100%);
+        }
+
+        .mod-detail-download:hover {
+            transform: scale(1.06);
+            box-shadow: 0 12px 40px rgba(0, 255, 136, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .mod-detail-header {
+                grid-template-columns: 1fr;
+            }
+
+            .mod-detail-info h1 {
+                font-size: 1.5rem;
+            }
+
+            .mod-detail-wrapper {
+                padding: 1.5rem;
+            }
+        }  
+        footer {  
+            background: rgba(5, 5, 8, 0.95);  
+            border-top: 2px solid var(--primary);  
+            padding: 2rem;  
+            text-align: center;  
+            margin-top: 4rem;  
+            color: var(--text-muted);  
+            backdrop-filter: blur(15px);  
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+            z-index: 2;
+        }  
+
+        footer p {  
+            margin-bottom: 0.6rem;  
+            font-weight: 400;
+            font-size: 0.9rem;
+        }  
+
+        footer a {  
+            color: var(--primary);  
+            text-decoration: none;  
+            transition: all 0.3s ease;  
+            font-weight: 600;
+        }  
+
+        footer a:hover {  
+            color: var(--accent);  
+            text-shadow: 0 0 8px var(--glow-primary);
+        }  
+
+        /* Responsive */  
+        @media (max-width: 768px) {  
+            .hamburger {  
+                display: flex;  
+            }  
+
+            .nav-menu {  
+                display: none;  
+            }  
+
+            .hero h1 {  
+                font-size: 2rem;  
+            }  
+
+            .mod-grid {  
+                grid-template-columns: 1fr;  
+                gap: 1.5rem;
+            }  
+
+            .main {  
+                padding: 2rem 1rem;  
+            }
+
+            .about-container,
+            .contact-container {
+                padding: 2rem 1.5rem;
+            }
+        }  
+
+        /* Scroll Bar */  
+        ::-webkit-scrollbar {  
+            width: 10px;  
+        }  
+
+        ::-webkit-scrollbar-track {  
+            background: var(--bg-dark);  
+        }  
+
+        ::-webkit-scrollbar-thumb {  
+            background: var(--primary);  
+            border-radius: 5px;  
+            box-shadow: 0 0 8px var(--glow-primary);
+        }  
+
+        ::-webkit-scrollbar-thumb:hover {  
+            background: var(--accent);  
+            box-shadow: 0 0 12px var(--glow-primary);
+        }  
+    </style>
+
+</head>  
+<body>  
+    <!-- Navigation -->  
+    <nav>  
+        <div class="logo" onclick="showPage('home')">
+            <img src="mcmodhub.jpg" alt="MC Mods Logo" style="max-height: 50px; max-width: 200px;">
+        </div>  
+        <button class="hamburger" id="hamburger" onclick="toggleSidebar()">  
+            <span></span>  
+            <span></span>  
+            <span></span>  
+        </button>  
+        <ul class="nav-menu">  
+            <li><a onclick="showPage('home'); return false;">Home</a></li>  
+            <li><a onclick="showPage('about'); return false;">About</a></li>  
+            <li><a onclick="showPage('contact'); return false;">Contact</a></li>  
+        </ul>  
+    </nav>  
+
+    <!-- Sidebar -->  
+    <div class="sidebar" id="sidebar">  
+        <div class="sidebar-top">
+            <a onclick="toggleSidebar(); showPage('home'); return false;">Home</a>  
+            <a onclick="toggleSidebar(); showPage('about'); return false;">About</a>  
+            <a onclick="toggleSidebar(); showPage('contact'); return false;">Contact</a>  
+        </div>
+        <div class="sidebar-bottom">
+            <a href="https://ko-fi.com/modcrafthub" target="_blank">💝 Donate/Support</a>
+        </div>
+    </div>  
+
+    <!-- Main Content -->  
+    <div class="main">  
+        <!-- Home Section -->  
+        <div id="home-page" class="page-section active">  
+            <div class="hero">  
+                <h1>MC Mods</h1>  
+                <p>Download Premium Minecraft Bedrock Mods | Enhance Your Gaming Experience</p>  
+            </div>  
+
+            <!-- Mod Grid -->  
+            <div class="mod-grid" id="mod-grid"></div>  
+        </div>  
+
+        <!-- About Section -->  
+        <div id="about-page" class="page-section">  
+            <div class="about-container">
+                <h2>About MC Mods</h2>
+                <p>MC Mods is your ultimate destination for downloading high-quality Minecraft Bedrock mods. We provide a curated collection of mods that enhance gameplay, add new features, and create unique gaming experiences. Our platform is designed for easy navigation and quick downloads.</p>
+                <p>Whether you're looking for gameplay enhancements, visual improvements, or completely new adventures, MC Mods has something for every player. Join our community and transform your Minecraft experience today.</p>
+                <a href="https://ko-fi.com/modcrafthub" target="_blank" class="donate-button">Support Us & Donate</a>
+            </div>
+        </div>
+
+        <!-- Contact Section -->  
+        <div id="contact-page" class="page-section">  
+            <div class="contact-container">
+                <h2>Contact Us</h2>
+                <p>Have questions or suggestions? We'd love to hear from you! Feel free to reach out through any of the following methods:</p>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <label>Email</label>
+                        <a href="mailto:shadowbenx1sbx@gmail.com">shadowbenx1sbx@gmail.com</a>
+                    </div>
+                    <div class="contact-item">
+                        <label>Phone</label>
+                        <a href="tel:+2349160480989">+2349160480989</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>  
+
+        <!-- Mod Detail Page -->
+        <div id="mod-detail-page" class="mod-detail-page"></div>
+
+    <!-- Footer -->  
+    <footer>  
+        <p>&copy; 2026 MC Mods. All rights reserved.</p>  
+        <p>Minecraft is a trademark of Microsoft Corporation. MC Mods is an independent fan site.</p>  
+        <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a> | <a href="#">Contact</a></p>  
+    </footer>  
+
+    <script>  
+        // Mod Data - Detailed SEO-Optimized Descriptions
+        const mods = [
+            {  
+                id: 1,  
+                name: "A Quiet Place V2",  
+                version: "1.21+",  
+                downloads: "45.2K",  
+                rating: "4.8/5",  
+                description: "Face sound-sensitive Death Angels and survive in a terrifying world. Explore eerie environments with thrilling sound mechanics.",  
+                downloadLink: "https://www.mediafire.com/file/c6o2cto9i4izenw/A_Quiet_Place_V2.mcpack/file",
+                image: "a quiet place v2 mod.jpeg"
+            },
+            {  
+                id: 2,  
+                name: "A Quiet Place Addon",  
+                version: "1.21+",  
+                downloads: "32.1K",  
+                rating: "4.6/5",  
+                description: "Complete Quiet Place addon with Death Angels, sound-sensitive creatures, and eerie survival mechanics. Master silence to survive.",  
+                downloadLink: "https://www.mediafire.com/file/82n0061fx3uwx4k/a_quiet_place.mcaddon.zip/file",
+                image: "a quiet place mod.jpeg"
+            },
+            {  
+                id: 3,  
+                name: "Cinematron",  
+                version: "1.21+",  
+                downloads: "28.5K",  
+                rating: "4.7/5",  
+                description: "Professional cinematic camera system with smooth camera paths, focus points, and replay functionality for creating stunning videos.",  
+                downloadLink: "https://www.mediafire.com/file/t2icf429mgry8ym/cinematron.mcpack/file",
+                image: "cinematic mod.jpeg"
+            },
+            {  
+                id: 4,  
+                name: "Naruto Uzumaki Mod",  
+                version: "1.21+",  
+                downloads: "56.3K",  
+                rating: "4.9/5",  
+                description: "Play as Naruto with Shadow Clone Jutsu, Rasengan, and summon mini Kurama. Experience anime-style ninja combat with unique jutsu abilities.",  
+                downloadLink: "https://www.mediafire.com/file/6qibspgemx8znix/naruto-uzumaki-mod.mcpack/file",
+                image: "Naruto mod.jpeg"
+            },
+            {  
+                id: 5,  
+                name: "Quiet Place Addon",  
+                version: "1.21+",  
+                downloads: "24.8K",  
+                rating: "4.5/5",  
+                description: "Variant Quiet Place addon with sound-sensitive creature mechanics. Use the Hearing Aid to fend off terrifying monsters.",  
+                downloadLink: "https://www.mediafire.com/file/542sdevumjja72y/quiet-place.mcaddon/file",
+                image: "replay mod.jpeg"
+            },
+            {  
+                id: 6,  
+                name: "ReplayCraft v3.1.2",  
+                version: "1.21+",  
+                downloads: "38.7K",  
+                rating: "4.8/5",  
+                description: "Real replay and cinematic system for Minecraft Bedrock. Record gameplay in background, create cinematic replays with camera control.",  
+                downloadLink: "https://www.mediafire.com/file/5ylhld6gwukuk1i/ReplayCraft-v3.1.2.mcaddon/file",
+                image: "replay craft mod.jpeg"
+            },
+            {  
+                id: 7,  
+                name: "Time Stop Mod",  
+                version: "1.21+",  
+                downloads: "41.2K",  
+                rating: "4.7/5",  
+                description: "Freeze time to pause mobs, projectiles, and weather. Stop arrows mid-air, freeze entities, and accelerate time with powerful controls.",  
+                downloadLink: "https://www.mediafire.com/file/qjrbfdau399mlws/time-stop-mod.mcaddon/file",
+                image: "time stop mod.jpeg"
+            },
+            {  
+                id: 8,  
+                name: "Time Stop Texture",  
+                version: "1.21+",  
+                downloads: "19.3K",  
+                rating: "4.6/5",  
+                description: "Custom texture pack designed to complement the Time Stop mod. Enhances visual effects for frozen time mechanics.",  
+                downloadLink: "https://www.mediafire.com/file/wntddfltzv9m8b5/time-stop-texture.mcaddon/file",
+                image: "time stop texture.jpeg"
+            },
+            {  
+                id: 9,  
+                name: "Ultra Vibrant Visuals Shader",  
+                version: "1.21+",  
+                downloads: "67.4K",  
+                rating: "4.9/5",  
+                description: "Premium shader with dynamic lighting, reflective water with caustics, enhanced clouds, and PBR elements. Transforms visuals for stunning gameplay.",  
+                downloadLink: "https://www.mediafire.com/file/87w40gjo9e0rt1t/Ultra-Vibrant-Visuals-Shader-MCPE1.21.mcpack/file",
+                image: "vibrant visuals mod.jpeg"
+            }
+        ];
+
+        // Initialize mod grid
+        function initializeMods() {
+            const modGrid = document.getElementById('mod-grid');
+            modGrid.innerHTML = '';
+            mods.forEach((mod, index) => {
+                const modCard = document.createElement('div');
+                modCard.className = 'mod-card';
+                modCard.innerHTML = `
+                    ${mod.image 
+                        ? `<img class="mod-thumb" src="${mod.image}" alt="${mod.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                           <div class="mod-thumb-placeholder" style="display:none;">${mod.name}</div>`
+                        : `<div class="mod-thumb-placeholder">${mod.name}</div>`
+                    }
+                    <div class="mod-header">
+                        <h3>${mod.name}</h3>
+                        <p>v${mod.version}</p>
+                    </div>
+                    <div class="mod-info">
+                        <div class="mod-meta">
+                            <span>⬇️ ${mod.downloads}</span>
+                            <span>⭐ ${mod.rating}</span>
+                        </div>
+                        <div class="mod-description">${mod.description}</div>
+                        <button class="mod-download" onclick="showModDetail(${mod.id})">Download</button>
+                    </div>
+                `;
+                modGrid.appendChild(modCard);
+            });
+        }
+
+        // Show mod detail page
+        function showModDetail(modId) {
+            const mod = mods.find(m => m.id === modId);
+            if (!mod) return;
+
+            const detailPage = document.getElementById('mod-detail-page');
+            detailPage.innerHTML = `
+                <div class="mod-detail-wrapper">
+                    <button class="back-to-mods" onclick="showPage('home')">← Back to Mods</button>
+                    
+                    <div class="mod-detail-header">
+                        <div class="mod-detail-image">
+                            ${mod.image 
+                                ? `<img src="${mod.image}" alt="${mod.name}" onerror="this.parentElement.innerHTML='<div class=\\'mod-detail-image-placeholder\\'>${mod.name}</div>'">`
+                                : `<div class="mod-detail-image-placeholder">${mod.name} - Mod Preview</div>`
+                            }
+                        </div>
+                        
+                        <div class="mod-detail-info">
+                            <h1>${mod.name}</h1>
+                            
+                            <div class="mod-detail-stats">
+                                <div class="stat-box">
+                                    <div class="stat-label">Version</div>
+                                    <div class="stat-value">v${mod.version}</div>
+                                </div>
+                                <div class="stat-box">
+                                    <div class="stat-label">Downloads</div>
+                                    <div class="stat-value">${mod.downloads}</div>
+                                </div>
+                                <div class="stat-box">
+                                    <div class="stat-label">Rating</div>
+                                    <div class="stat-value">${mod.rating}</div>
+                                </div>
+                                <div class="stat-box">
+                                    <div class="stat-label">Type</div>
+                                    <div class="stat-value">Add-on</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mod-detail-description">
+                        <strong>Description:</strong><br><br>
+                        ${mod.description}
+                    </div>
+                    
+                    <a href="${mod.downloadLink}" target="_blank" class="mod-detail-download">Download Now</a>
+                </div>
+            `;
+
+            // Hide home page and show detail page
+            document.getElementById('home-page').style.display = 'none';
+            document.getElementById('about-page').style.display = 'none';
+            document.getElementById('contact-page').style.display = 'none';
+            detailPage.classList.add('active');
+            
+            window.scrollTo(0, 0);
+        }
+
+        // Page Navigation
+        function showPage(pageName) {
+            // Hide all pages
+            document.querySelectorAll('.page-section').forEach(page => {
+                page.style.display = 'none';
+                page.classList.remove('active');
+            });
+            
+            // Hide mod detail page
+            document.getElementById('mod-detail-page').classList.remove('active');
+            
+            // Show selected page
+            const page = document.getElementById(pageName + '-page');
+            if (page) {
+                page.style.display = 'block';
+                page.classList.add('active');
+            }
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Sidebar Toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const hamburger = document.getElementById('hamburger');
+            sidebar.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            initializeMods();
+        });
+    </script>  
+</body>  
+</html>
